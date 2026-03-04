@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 	"google.golang.org/grpc"
-	"project/project/proto"
+	"server_metrics/project/proto"
 )
 
 func GetLocalIP() string {
