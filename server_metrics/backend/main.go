@@ -5,21 +5,20 @@ import (
 	"log"
 	"time"
 
-	"project/project/proto"
+	"server_metrics/project/proto"
 
 	"google.golang.org/grpc"
 )
 
 func main() {
-	addressess := []string{
-		"192.168.1.97:50051",
-		"192.168.1.69:50051",
+	addresses := []string{
+		"IP:50051", // add here your ip addresses
 	}
 	timeout := 12 * time.Second
 
 	for {
 		for i := range addressess {
-			metrics, err := getMetrics(addressess[i], timeout)
+			metrics, err := getMetrics(addresses[i], timeout)
 			if err != nil {
 				log.Println("Error:", err)
 			} else {
