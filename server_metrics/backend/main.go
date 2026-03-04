@@ -5,22 +5,29 @@ import (
 	"log"
 	"time"
 
-	"google.golang.org/grpc"
 	"project/project/proto"
+
+	"google.golang.org/grpc"
 )
 
 func main() {
-	agentAddress := "192.168.1.69:50051" // IP:порт агента
+	addressess := []string{
+		"192.168.1.97:50051",
+		"192.168.1.69:50051",
+	}
 	timeout := 12 * time.Second
 
 	for {
-		metrics, err := getMetrics(agentAddress, timeout)
-		if err != nil {
-			log.Println("Error:", err)
-		} else {
-			log.Printf("CPU: %d%%, Memory: %dMB, Hostname: %s\n", metrics.CpuUsage, metrics.MemoryUsage, metrics.OsName)
+		for i := range addressess {
+			metrics, err := getMetrics(addressess[i], timeout)
+			if err != nil {
+				log.Println("Error:", err)
+			} else {
+				log.Printf("CPU: %d%%, Memory: %dMB, Hostname: %s, OS: %s\n",
+					metrics.CpuUsage, metrics.MemoryUsage, metrics.OsName, metrics.Platform)
+			}
+			time.Sleep(4 * time.Second)
 		}
-		time.Sleep(8 * time.Second)
 	}
 }
 
