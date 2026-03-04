@@ -1,6 +1,6 @@
 # Environment for launch system metrics
 ## Prerequisites
-export PATH=$PATH:/usr/local/go/bin
+export PATH=$PATH:/usr/local/go/bin\n
 export PATH="$PATH:$(go env GOPATH)/bin"
 go mod init project
 go mod tidy
