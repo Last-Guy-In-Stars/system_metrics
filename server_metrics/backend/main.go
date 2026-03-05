@@ -17,7 +17,7 @@ func main() {
 	timeout := 12 * time.Second
 
 	for {
-		for i := range addressess {
+		for i := range addresses {
 			metrics, err := getMetrics(addresses[i], timeout)
 			if err != nil {
 				log.Println("Error:", err)
