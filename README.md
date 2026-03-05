@@ -1,4 +1,6 @@
 # Environment for launch system metrics
+## Example worked
+![Get metrics from windows and linux system](pic/example.png)
 ## Quick start
 ```bash
 export PATH=$PATH:/usr/local/go/bin 
