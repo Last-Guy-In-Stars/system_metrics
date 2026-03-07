@@ -68,7 +68,7 @@ func main() {
 	LocalIP := GetLocalIP()
 	lis, err := net.Listen("tcp", newPort)
 	if err != nil {
-		fmt.Println("failed to listen:", err)
+		log.Fatalf("failed to listen:", err)
 	}
 
 	grpcServer := grpc.NewServer()
