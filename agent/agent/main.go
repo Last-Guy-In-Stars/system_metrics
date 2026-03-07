@@ -64,7 +64,7 @@ func GetLocalIP() string {
 }
 
 func main() {
-	newPort := GetNewPort()
+	newPort := ":" + GetNewPort()
 	LocalIP := GetLocalIP()
 	lis, err := net.Listen("tcp", newPort)
 	if err != nil {
@@ -74,7 +74,7 @@ func main() {
 	grpcServer := grpc.NewServer()
 	proto.RegisterAgentServiceServer(grpcServer, &server{})
 
-	log.Printf("Agent listening at %s:%s", LocalIP, newPort)
+	log.Printf("Agent listening at %s%s", LocalIP, newPort)
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}

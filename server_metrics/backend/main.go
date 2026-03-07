@@ -22,8 +22,12 @@ func main() {
 			if err != nil {
 				log.Println("Error:", err)
 			} else {
-				log.Printf("CPU: %d%%, Memory: %dMB, Hostname: %s, OS: %s\n",
-					metrics.CpuUsage, metrics.MemoryUsage, metrics.OsName, metrics.Platform)
+				log.Printf(
+					"CPU: %d%%, Memory: %dMB, Hostname: %s, OS: %s\n",
+					metrics.CpuUsage,
+					metrics.MemoryUsage,
+					metrics.OsName,
+					metrics.Platform)
 			}
 			time.Sleep(4 * time.Second)
 		}
