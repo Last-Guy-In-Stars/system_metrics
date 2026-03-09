@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"sync"
 	"time"
 
 	"server_metrics/project/proto"
@@ -12,25 +13,32 @@ import (
 
 func main() {
 	addresses := []string{
-		"IP:50051", // add here your ip addresses
+		"192.168.1.97:50051",
+		"192.168.1.69:50051", // add here your ip addresses
 	}
-	timeout := 12 * time.Second
-
+	timeout := 2 * time.Second
 	for {
+		var wg sync.WaitGroup // Create a WaitGroup to wait for all goroutines to finish
 		for i := range addresses {
-			metrics, err := getMetrics(addresses[i], timeout)
-			if err != nil {
-				log.Println("Error:", err)
-			} else {
-				log.Printf(
-					"CPU: %d%%, Memory: %dMB, Hostname: %s, OS: %s\n",
-					metrics.CpuUsage,
-					metrics.MemoryUsage,
-					metrics.OsName,
-					metrics.Platform)
-			}
-			time.Sleep(4 * time.Second)
+			wg.Add(1) //  Add 1 to the WaitGroup for each goroutine
+
+			go func(addr string) { // Create a goroutine to fetch metrics from the server
+				defer wg.Done() // Decrement the WaitGroup when the goroutine finishes
+				metrics, err := getMetrics(addr, timeout)
+				if err != nil {
+					log.Println("Error:", err)
+				} else {
+					log.Printf(
+						"CPU: %d%%, Memory: %dMB, Hostname: %s, OS: %s\n",
+						metrics.CpuUsage,
+						metrics.MemoryUsage,
+						metrics.OsName,
+						metrics.Platform)
+				}
+			}(addresses[i])
 		}
+		wg.Wait() // Wait for all goroutines to finish
+		time.Sleep(1 * time.Second)
 	}
 }
 
