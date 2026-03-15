@@ -6,6 +6,7 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/shirou/gopsutil/v3/mem"
 )
@@ -44,3 +45,33 @@ func GetMemory() int32 {
 	}
 	return int32(mem.Used / (1024 * 1024)) // МБ
 }
+
+// Block of temerature code
+func GetCPUTemperature() (float64, error) {
+	temps, err := host.SensorsTemperatures()
+	if err != nil {
+		return 0, err
+	}
+
+	for _, t := range temps {
+		if t.SensorKey == "Package id 0" || t.SensorKey == "CPU" {
+			return t.Temperature, nil
+		}
+	}
+
+	if len(temps) > 0 {
+		return temps[0].Temperature, nil
+	}
+
+	return 0, fmt.Errorf("CPU temperature not found")
+}
+
+func GetTemperature() float64 {
+	temp, err := GetCPUTemperature()
+	if err != nil {
+		fmt.Printf("Get error: %s", err)
+	}
+	return temp
+}
+
+//

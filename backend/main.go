@@ -3,41 +3,42 @@ package main
 import (
 	"context"
 	"log"
+	"project/project/proto"
 	"sync"
 	"time"
-
-	"server_metrics/project/proto"
 
 	"google.golang.org/grpc"
 )
 
 func main() {
 	addresses := []string{
-		"192.168.1.97:50051",
-		"192.168.1.69:50051", // add here your ip addresses
+		// "192.168.1.97:50051",
+		// "192.168.1.69:50051",
+		"192.168.1.68:50051", // add here your ip addresses
 	}
 	timeout := 2 * time.Second
 	for {
-		var wg sync.WaitGroup // Create a WaitGroup to wait for all goroutines to finish
+		var wg sync.WaitGroup
 		for i := range addresses {
-			wg.Add(1) //  Add 1 to the WaitGroup for each goroutine
+			wg.Add(1)
 
-			go func(addr string) { // Create a goroutine to fetch metrics from the server
-				defer wg.Done() // Decrement the WaitGroup when the goroutine finishes
+			go func(addr string) {
+				defer wg.Done()
 				metrics, err := getMetrics(addr, timeout)
 				if err != nil {
 					log.Println("Error:", err)
 				} else {
 					log.Printf(
-						"CPU: %d%%, Memory: %dMB, Hostname: %s, OS: %s\n",
+						"CPU: %d%%, Memory: %dMB, Hostname: %s, OS: %s, Temperature: %dC\n",
 						metrics.CpuUsage,
 						metrics.MemoryUsage,
 						metrics.OsName,
-						metrics.Platform)
+						metrics.Platform,
+						metrics.Temperature)
 				}
 			}(addresses[i])
 		}
-		wg.Wait() // Wait for all goroutines to finish
+		wg.Wait()
 		time.Sleep(1 * time.Second)
 	}
 }

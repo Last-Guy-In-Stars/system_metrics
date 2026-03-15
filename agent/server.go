@@ -25,5 +25,6 @@ func (s *server) GetMetrics(ctx context.Context, req *proto.EmptyRequest) (*prot
 		MemoryUsage: int32(GetMemory()),
 		OsName:      string(GetOsName()),
 		Platform:    string(GetOs()),
+		Temperature: float64(GetTemperature()),
 	}, nil
 }

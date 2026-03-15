@@ -15,4 +15,5 @@ message MetricsResponse {
     int32 memory_usage = 2;
     string os_name = 3;
     string platform = 4;
+    int32 temperature = 5;
 }

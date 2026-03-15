@@ -6,9 +6,10 @@ import (
 	"log"
 	"net"
 	"os"
-	"server_metrics/project/proto"
 	"strconv"
 	"strings"
+
+	"project/project/proto"
 
 	"google.golang.org/grpc"
 )
@@ -43,7 +44,7 @@ func GetNewPort() string {
 		}
 
 		fmt.Printf("Using port %d.\n", port)
-		return ":" + text
+		return text
 	}
 }
 
@@ -64,7 +65,7 @@ func GetLocalIP() string {
 }
 
 func main() {
-	newPort := GetNewPort()
+	newPort := ":" + GetNewPort()
 	LocalIP := GetLocalIP()
 	lis, err := net.Listen("tcp", newPort)
 	if err != nil {
