@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"project/project/proto"
 	"sync"
+	"system_metrics/project/proto"
 	"time"
 
 	"github.com/go-gota/gota/dataframe"
