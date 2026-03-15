@@ -43,7 +43,7 @@ func GetNewPort() string {
 		}
 
 		fmt.Printf("Using port %d.\n", port)
-		return text
+		return ":" + text
 	}
 }
 
@@ -64,7 +64,7 @@ func GetLocalIP() string {
 }
 
 func main() {
-	newPort := ":" + GetNewPort()
+	newPort := GetNewPort()
 	LocalIP := GetLocalIP()
 	lis, err := net.Listen("tcp", newPort)
 	if err != nil {

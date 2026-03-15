@@ -3,10 +3,17 @@ package main
 import (
 	"fmt"
 	"os"
+	"runtime"
 	"time"
+
 	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/shirou/gopsutil/v3/mem"
 )
+
+func GetOs() string {
+	os := runtime.GOOS
+	return os
+}
 
 func GetOsName() string {
 	os_name, err := os.Hostname()

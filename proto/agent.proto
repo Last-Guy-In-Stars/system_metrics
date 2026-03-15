@@ -14,4 +14,5 @@ message MetricsResponse {
     int32 cpu_usage = 1;
     int32 memory_usage = 2;
     string os_name = 3;
+    string platform = 4;
 }

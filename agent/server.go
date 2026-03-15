@@ -1,10 +1,11 @@
 package main
 
 import (
-	"log"
 	"context"
-	"google.golang.org/grpc/peer"
+	"log"
 	"project/project/proto"
+
+	"google.golang.org/grpc/peer"
 )
 
 type server struct {
@@ -20,8 +21,9 @@ func (s *server) GetMetrics(ctx context.Context, req *proto.EmptyRequest) (*prot
 	}
 	// Получаем метрики
 	return &proto.MetricsResponse{
-		CpuUsage: int32(GetCPU()),
+		CpuUsage:    int32(GetCPU()),
 		MemoryUsage: int32(GetMemory()),
-		OsName: string(GetOsName()),
+		OsName:      string(GetOsName()),
+		Platform:    string(GetOs()),
 	}, nil
 }
