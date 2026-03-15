@@ -2,45 +2,89 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"os"
 	"project/project/proto"
 	"sync"
 	"time"
 
+	"github.com/go-gota/gota/dataframe"
+	"github.com/go-gota/gota/series"
 	"google.golang.org/grpc"
 )
 
-func main() {
-	addresses := []string{
-		// "192.168.1.97:50051",
-		// "192.168.1.69:50051",
+var (
+	addresses = []string{
+		"192.168.1.97:50051",
+		"192.168.1.69:50051",
 		"192.168.1.68:50051", // add here your ip addresses
 	}
-	timeout := 2 * time.Second
-	for {
-		var wg sync.WaitGroup
-		for i := range addresses {
-			wg.Add(1)
+	timeout = 10 * time.Second
+)
 
-			go func(addr string) {
-				defer wg.Done()
-				metrics, err := getMetrics(addr, timeout)
-				if err != nil {
-					log.Println("Error:", err)
-				} else {
-					log.Printf(
-						"CPU: %d%%, Memory: %dMB, Hostname: %s, OS: %s, Temperature: %dC\n",
-						metrics.CpuUsage,
-						metrics.MemoryUsage,
-						metrics.OsName,
-						metrics.Platform,
-						metrics.Temperature)
-				}
-			}(addresses[i])
-		}
-		wg.Wait()
-		time.Sleep(1 * time.Second)
+func main() {
+	go scheduleEmail()
+	for {
+		CollectAndSaveMetrics()
+		time.Sleep(10 * time.Second)
 	}
+}
+
+func CollectAndSaveMetrics() {
+	var wg sync.WaitGroup
+	results := make([]*proto.MetricsResponse, len(addresses))
+
+	for i := range addresses {
+		wg.Add(1)
+
+		go func(addr string) {
+			defer wg.Done()
+			metrics, err := getMetrics(addr, timeout)
+			if err != nil {
+				log.Println("Error:", err)
+			} else {
+				results[i] = metrics
+			}
+		}(addresses[i])
+	}
+	wg.Wait()
+
+	var names []string
+	var cpu []int
+	var mem []int
+	var os_name []string
+	var temp []int
+
+	for _, m := range results {
+		if m != nil {
+			names = append(names, m.OsName)
+			cpu = append(cpu, int(m.CpuUsage))
+			mem = append(mem, int(m.MemoryUsage))
+			os_name = append(os_name, m.Platform)
+			temp = append(temp, int(m.Temperature))
+		}
+	}
+
+	df := dataframe.New(
+		series.New(names, series.String, "NamePC"),
+		series.New(cpu, series.Int, "CPULoad"),
+		series.New(mem, series.Int, "MemLoad"),
+		series.New(os_name, series.String, "OS"),
+		series.New(temp, series.Int, "Temp"),
+	)
+
+	filename := fmt.Sprintf("metrics_%s.csv", time.Now().Format("2007-07-07"))
+	file, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Println("Error opening file:", err)
+		return
+	}
+	defer file.Close()
+	df.WriteCSV(file)
+
+	log.Println(df)
+
 }
 
 func getMetrics(address string, timeout time.Duration) (*proto.MetricsResponse, error) {
